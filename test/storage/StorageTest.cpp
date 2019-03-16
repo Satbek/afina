@@ -20,14 +20,19 @@ TEST(StorageTest, PutGet) {
     SimpleLRU storage;
 
     EXPECT_TRUE(storage.Put("KEY1", "val1"));
-    EXPECT_TRUE(storage.Put("KEY2", "val2"));
+    EXPECT_TRUE(storage.Put("KEY2", "val1"));
+    EXPECT_TRUE(storage.Put("KEY3", "val2"));
+    EXPECT_TRUE(storage.Put("KEY4", "val3"));
 
     std::string value;
     EXPECT_TRUE(storage.Get("KEY1", value));
     EXPECT_TRUE(value == "val1");
 
-    EXPECT_TRUE(storage.Get("KEY2", value));
+    EXPECT_TRUE(storage.Get("KEY3", value));
     EXPECT_TRUE(value == "val2");
+
+    EXPECT_TRUE(storage.Get("KEY2", value));
+    EXPECT_TRUE(value == "val1");
 }
 
 TEST(StorageTest, PutOverwrite) {
@@ -89,6 +94,25 @@ TEST(StorageTest, PutDeleteGet) {
     EXPECT_FALSE(storage.Get("KEY1", value));
     EXPECT_TRUE(storage.Get("KEY2", value));
     EXPECT_TRUE(value == "val2");
+}
+
+TEST(StorageTest, DeleteFromTail) {
+    SimpleLRU storage;
+    EXPECT_TRUE(storage.Put("KEY1", "val1"));
+    EXPECT_TRUE(storage.Put("KEY2", "val2"));
+    EXPECT_TRUE(storage.Delete("KEY2"));
+    std::string value;
+    EXPECT_FALSE(storage.Get("KEY2", value));
+}
+
+TEST(StorageTest, DeleteFromMiddle) {
+    SimpleLRU storage;
+    EXPECT_TRUE(storage.Put("KEY1", "val1"));
+    EXPECT_TRUE(storage.Put("KEY2", "val2"));
+    EXPECT_TRUE(storage.Put("KEY3", "val2"));
+    EXPECT_TRUE(storage.Delete("KEY2"));
+    std::string value;
+    EXPECT_FALSE(storage.Get("KEY2", value));
 }
 
 std::string pad_space(const std::string &s, size_t length) {
